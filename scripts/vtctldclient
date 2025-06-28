@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "$@"
+PODNAME=$(kubectl -n example get pods -l planetscale.com/component=vtctld -o json | jq -r '.items[0].metadata.name')
+kubectl -n example exec -it $PODNAME -- vtctldclient --server 127.0.0.1:15999 "$@"
