@@ -97,8 +97,16 @@ async fn process_stream(
 
         for event in message.events {
             if let Some(row_event) = event.row_event {
-                let keyspace: KeyspaceName = row_event.keyspace.into();
-                let table: TableName = row_event.table_name.into();
+                let (keyspace, table): (KeyspaceName, TableName) = row_event.table_name
+                    .split_once(".")
+                    .map(|(keyspace_str, table_name_str)| (
+                        keyspace_str.to_string().into(),
+                        table_name_str.to_string().into())
+                    ).expect(
+                        "Expecting schema table name to be keyspace and table name separated by period",
+                    );
+
+                log::info!("Received event for {}.{}", keyspace, table);
                 for row_change in row_event.row_changes {
                     outgoing_row_changes
                         .send(ReplicationRowEventEnvelope {

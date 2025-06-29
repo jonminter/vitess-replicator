@@ -101,7 +101,10 @@ pub(crate) async fn get_schema_for_tables(
                 kind: VitessSchemaErrorKind::VitessClientCallFailed(e),
             })?;
 
-    log::info!("Getting schemas for all tables...");
+    log::info!(
+        "Getting schemas for all tables from tablet {:?}...",
+        primary_tablet.alias
+    );
     let schema_response = vtctld_client
         .get_schema(tonic::Request::new(GetSchemaRequest {
             tables: tables.iter().map(|t| t.to_string()).collect(),
@@ -126,6 +129,8 @@ pub(crate) async fn get_schema_for_tables(
         .iter()
         .map(|table_def| get_schema_from_table_def(keyspace, table_def))
         .collect();
+
+    log::info!("All schemas = {:?}", schemas);
 
     validate_all_schemas_present(keyspace, tables, schemas)
 }
@@ -158,7 +163,7 @@ fn get_schema_from_table_def(
     keyspace: &KeyspaceName,
     table_def: &TableDefinition,
 ) -> (TableName, VitessSchema) {
-    let table_name = TableName(format!("{}.{}", keyspace, table_def.name));
+    let table_name = TableName(table_def.name.clone());
     (
         table_name.clone(),
         VitessSchema {

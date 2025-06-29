@@ -73,6 +73,8 @@ pub(crate) fn start_row_change_json_converter(
             kind: RowJsonConverterErrorKind::RecvFailed(e),
         })?;
 
+        log::info!("Deserializing row, finding schema...");
+
         let schema = schemas
             .get(&event_envelope.table)
             .ok_or(RowJsonConverterError {

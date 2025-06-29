@@ -13,7 +13,7 @@ CREATE TABLE users (
 """
 
 subprocess.check_call(
-    ["./vtctldclient", "ApplySchema", f"--sql={TABLE_DDL}", "commerce"],
+    ["./scripts/vtctldclient", "ApplySchema", f"--sql={TABLE_DDL}", "commerce"],
 )
 
 
@@ -38,5 +38,5 @@ VSCHEMA = {
 }
 
 subprocess.check_call(
-    ["./vtctldclient", "ApplyVSchema", "commerce", f"--vschema={json.dumps(VSCHEMA)}"]
+    ["./scripts/vtctldclient", "ApplyVSchema", "commerce", f"--vschema={json.dumps(VSCHEMA)}"]
 )
